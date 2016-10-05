@@ -1,5 +1,8 @@
+package WorkChecker;
+
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  *
@@ -11,10 +14,10 @@ import java.util.LinkedList;
 
 public class HashTable
 {
-	private HashMap table = new HashMap();
+	private Map<Integer, LinkedList> table = new HashMap();
 	private int tableSize;
 	private StringHasher hasher;
-	private LinkedList[] hashArray; 
+//	private LinkedList[] hashArray; 
 	
 	/**
    * The constructor is given a table size (i.e. how big to make the array)
@@ -29,7 +32,11 @@ public class HashTable
 
 		this.tableSize=tableSize;
 		this.hasher=hasher;
-		hashArray= new LinkedList[tableSize];
+		table = new HashMap<Integer, LinkedList>(tableSize);
+		
+		for(int i = 0; i < tableSize; i ++){
+			table.put(i, new LinkedList());
+		}
 	
 	}
 
@@ -43,16 +50,16 @@ public class HashTable
 	
 	public void add(String s)
 	{
-
-		if(!table.containsValue(s))
-		{
+		int key = hasher.hash(s);
 			if(table.containsKey(hasher.hash(s))){
-		hashArray[].addFirst(s);
-		table.put(hasher.hash(s)%tableSize, hashArray[0]);
+				table.get(key).addLast(s);
 			}
-			else
+			else{
+				LinkedList newEntry = new LinkedList();
+				newEntry.addFirst(s);
+				table.put(hasher.hash(s), newEntry);
+			}
 				
-		}
 	}
 	
 
@@ -65,7 +72,7 @@ public class HashTable
 	
 	public boolean lookup(String s)
 	{
-		if (table.containsValue(hasher.hash(s)))
+		if (table.get(hasher.hash(s)).contains(s))
 			return true;
 		else
 			return false;
@@ -84,8 +91,7 @@ public class HashTable
 	*/
 	public void remove(String s)
 	{
-
-		if(table.containsValue(s))
-			table.remove(hasher.hash(s));
+		if(table.get(hasher.hash(s)).contains(s))
+			table.get(hasher.hash(s)).remove(s);
 	}
 }
